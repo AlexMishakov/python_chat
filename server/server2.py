@@ -17,5 +17,3 @@ while True:
 
     conn_thread = threading.Thread(target=listen_user, args=(conn,))
     conn_thread.start()
-
-conn.close()
