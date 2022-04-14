@@ -1,13 +1,21 @@
 import socket
+import threading
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # создаем сокет
-sock.bind(('', 55000))  # связываем сокет с портом, где он будет ожидать сообщения
-sock.listen(10)  # указываем сколько может сокет принимать соединений
-print('Server is running, please, press ctrl+c to stop')
-while True:
-    conn, addr = sock.accept()  # начинаем принимать соединения
-    print('connected:', addr)  # выводим информацию о подключении
-    data = conn.recv(1024)  # принимаем данные от клиента, по 1024 байт
+def listen_user(conn):
+    data = conn.recv(1024)
     print(str(data))
-    conn.send(data.upper())  # в ответ клиенту отправляем сообщение в верхнем регистре
-conn.close()  # закрываем соединение
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock.bind(('', 55000))
+sock.listen(10)
+print('Server is running, please, press ctrl+c to stop')
+
+while True:
+    conn, addr = sock.accept()
+
+    print('connected:', addr)
+
+    conn_thread = threading.Thread(target=listen_user, args=(conn,))
+    conn_thread.start()
+
+conn.close()
